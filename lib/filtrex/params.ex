@@ -47,7 +47,12 @@ defmodule Filtrex.Params do
   def parse_conditions(configs, params) when is_map(params) do
     Enum.reduce(params, {:ok, []}, fn
       {key, value}, {:ok, conditions} ->
-        convert_and_add_condition(configs, key, value, conditions)
+        case convert_and_add_condition(configs, key, value, conditions) do
+          {:error, reason} ->
+            {:ok, conditions}
+          converted ->
+            converted
+        end
       _, {:error, reason} ->
         {:error, reason}
     end)
